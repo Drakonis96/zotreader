@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  zotreader:
+    container_name: zotreader
+    build: .
+    ports:
+      - "8006:8000"
+    env_file:
+      - .env
+    environment:
+      - ZOTERO_USER_ID=${ZOTERO_USER_ID}
+      - ZOTERO_API_KEY=${ZOTERO_API_KEY}
+      - WEBDAV_URL=${WEBDAV_URL}
+      - WEBDAV_USER=${WEBDAV_USER}
+      - WEBDAV_PASS=${WEBDAV_PASS}
+      - REDIS_URL=${REDIS_URL}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      # - ZOTERO_GROUP_ID=${ZOTERO_GROUP_ID}  # Descomenta si usas grupo
+    volumes:
+      - ./backend/downloaded_pdfs:/app/backend/downloaded_pdfs
+      - ./backend/annotations:/app/backend/annotations
+      - ./backend/database.db:/app/backend/database.db
+    restart: unless-stopped

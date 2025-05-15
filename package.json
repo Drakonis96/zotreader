@@ -1,0 +1,11 @@
+{
+  "name": "zotreader",
+  "type": "module",
+  "dependencies": {
+    "fabric": "^6.6.4",
+    "pdfjs-dist": "^5.2.133",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-pdf": "^9.2.1",
+    "react-resizable": "^3.0.5"
+  }
+}

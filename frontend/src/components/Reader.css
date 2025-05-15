@@ -1,0 +1,501 @@
+/* Reader.css */
+.reader-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+.reader-controls {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 0 10px;
+  background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  z-index: 10;
+  overflow-x: auto; /* Permitir scroll horizontal */
+  white-space: nowrap; /* Evitar que los botones se bajen */
+  position: relative; /* Permite posicionar el dropdown absoluto respecto a la barra */
+}
+
+.reader-controls > * {
+  flex-shrink: 0; /* No reducir el tamaño de los hijos */
+}
+
+.zoom-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-button:hover {
+  background-color: #e0e0e0;
+}
+
+.zoom-button.active-tool {
+  background-color: #e0e0e0;
+}
+
+/* Estilos para la paleta de colores */
+.color-picker {
+  display: flex;
+  margin-right: 10px;
+  gap: 3px;
+}
+
+.color-button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 0 2px;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.color-button.active-color {
+  box-shadow: 0 0 0 2px #333;
+}
+
+.zoom-level {
+  margin: 0 10px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.view-mode-button {
+  margin-left: auto;
+  margin-right: 15px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-mode-button:hover {
+  background-color: #e0e0e0;
+}
+
+.pdf-title {
+  margin-left: 15px;
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 300px;
+}
+
+.pdf-container {
+  position: relative;
+  flex: 1; /* Take remaining vertical space */
+  /* overflow: auto; */ /* Removed: Scrolling handled by inner mode */
+  /* display: flex; */ /* Remove flex from container */
+  /* flex-direction: column; */
+  /* align-items: center; */ /* Remove align-items */
+  background-color: #e0e0e0; /* Light gray background for scroll container */
+}
+
+.continuous-mode {
+  padding: 20px;
+  /* Center content in continuous mode */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto; /* Añadir scroll al modo continuous */
+  height: 100%; /* Ocupar todo el espacio disponible */
+}
+
+.single-mode {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: flex-start; /* Align page to top */
+  /* min-height: 100%; */ /* Removed: Height is now 100% */
+  height: 100%; /* Occupy full height of pdf-container */
+  width: 100%; /* Ensure it takes full width for justify-content */
+  padding: 20px; /* Uniform spacing around the page */
+  /* padding-bottom: 40px; */ /* Reverted to uniform padding */
+  box-sizing: border-box; /* Include padding in height/width calculation */
+  overflow: auto; /* Handle scrolling within single-mode */
+}
+
+.continuous-canvas-page-wrapper,
+.page-wrapper {
+  position: relative;
+  overflow: hidden;   /* evita que un objeto grande “salte” a la página anterior */
+}
+
+.page-wrapper {
+  position: relative; /* Establish positioning context for the canvas */
+  display: inline-block; /* Fit the content size */
+  line-height: 0; /* Prevent extra space below the page/canvas */
+}
+
+.page-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+}
+
+.page-nav-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  margin: 0 15px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.loading-pdf {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px;
+  color: #666;
+}
+
+.pdf-error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  padding: 20px;
+  text-align: center;
+  color: #d32f2f;
+  font-size: 18px;
+  position: relative;
+  overflow: auto;
+}
+
+.error-message {
+  margin-top: 20px;
+  max-width: 80%;
+}
+
+.no-pdf-selected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 18px;
+  color: #666;
+  text-align: center;
+}
+
+/* React-PDF generates canvas elements for pages */
+.react-pdf__Page {
+  margin: 10px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.react-pdf__Page:first-child {
+  margin-top: 0;
+}
+
+.react-pdf__Page:last-child {
+  margin-bottom: 0;
+}
+
+/* Add some padding at the bottom of continuous view to allow scrolling past the last page */
+.continuous-mode .react-pdf__Document {
+  padding-bottom: 50px;
+}
+
+/* Make sure annotations and text layer appear correctly */
+.react-pdf__Page__annotations.annotationLayer,
+.react-pdf__Page__textContent.textLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1; /* Ensure text layer is above base PDF but below annotation canvas */
+  pointer-events: none; /* Prevent text layer from capturing mouse events */
+}
+
+/* Additional text layer styles */
+.react-pdf__Page__textContent span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+/* Text selection mode */
+.text-selection-mode .react-pdf__Page__textContent {
+  z-index: 3 !important; /* Ensure text layer is on top */
+  pointer-events: auto !important; /* Enable text selection */
+}
+
+/* Make text transparent but selectable in text selection mode */
+.text-selection-mode .react-pdf__Page__textContent span {
+  color: transparent !important; /* Keep text invisible to prevent doubling */
+  cursor: text;
+}
+
+/* Style for the highlight when selecting text */
+.text-selection-mode .react-pdf__Page__textContent ::selection {
+  background: rgba(0, 100, 255, 0.4) !important; /* Brighter blue highlight for selection */
+}
+
+/* Annotation canvas styles - ensure perfect alignment with PDF page */
+.annotation-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: auto; /* Allow annotation canvas to capture mouse events */
+  z-index: 2; /* Place above PDF and text layer but below UI elements */
+  width: 100%;
+  height: 100%;
+  opacity: 1 !important; /* Ensure canvas is visible */
+  visibility: visible !important; /* Ensure canvas is visible */
+}
+
+/* Canvas container styles for fabric.js */
+.canvas-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 2 !important;
+}
+
+/* Cursor styles for annotation canvas */
+.draw-mode {
+  cursor: crosshair !important;
+}
+
+.text-mode {
+  cursor: text !important;
+}
+
+.highlight-mode {
+  cursor: cell !important;
+}
+
+/* Estilos para control de grosor del trazo */
+.thickness-control {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 0 2px;
+  border: 1px solid #ccc;
+}
+
+.thickness-button {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thickness-button:hover {
+  background-color: #e0e0e0;
+  border-radius: 3px;
+}
+
+.thickness-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thickness-value input {
+  width: 50px; /* Aumenta el ancho del input de grosor */
+  text-align: center;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  padding: 2px;
+}
+
+.thickness-value input:focus {
+  outline: none;
+  background-color: #fff;
+}
+
+/* Document Information Panel Styles */
+.doc-info-panel {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 15px 20px;
+  max-height: 250px;
+  overflow-y: auto;
+  position: relative;
+  box-sizing: border-box; /* Asegurar que el padding no afecte el tamaño total */
+  z-index: 1; /* Evitar que este panel afecte otros componentes */
+}
+
+/* Estos estilos solo deberían aplicarse al lector, no al sidebar derecho */
+.reader-container .doc-info-panel,
+.reader-container .doc-info-header,
+.reader-container .doc-info-content,
+.reader-container .doc-tag {
+  box-sizing: border-box; /* Evitar que afecte otros elementos */
+}
+
+.doc-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.doc-info-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.toggle-doc-info {
+  background-color: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.toggle-doc-info:hover {
+  background-color: #f3f4f6;
+}
+
+.doc-info-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.doc-authors {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 5px;
+}
+
+.doc-date {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.doc-abstract {
+  font-size: 14px;
+  color: #1f2937;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.doc-tags {
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.doc-tag {
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  padding: 3px 8px;
+  margin-right: 5px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.doc-doi, .doc-url {
+  font-size: 13px;
+  margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doc-doi a, .doc-url a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.doc-doi a:hover, .doc-url a:hover {
+  text-decoration: underline;
+}
+
+/* Adjust PDF container when showing document info - scope to reader container */
+.reader-container .pdf-container.with-doc-info {
+  height: calc(100% - 250px);
+}
+
+.dropdown-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  position: fixed; /* Cambia a fixed para que no dependa del scroll de la barra */
+  left: unset;
+  top: unset;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  padding: 4px 0;
+  min-width: 160px;
+}
+
+/* Ocultar los spinners de los inputs type=number */
+input.no-spinner::-webkit-inner-spin-button,
+input.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

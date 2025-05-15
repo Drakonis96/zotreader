@@ -1,0 +1,13 @@
+uvicorn[standard]
+fastapi
+python-dotenv
+google-genai>=0.4.0
+pyzotero
+requests
+python-multipart
+redis[async]>=4.3,<5
+openai>=1.0.0
+httpx
+PyPDF2
+reportlab
+markitdown[all]  # For PDF to Markdown conversion
