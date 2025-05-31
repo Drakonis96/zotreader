@@ -55,12 +55,12 @@ def load_libraries_cache():
         try:
             with open(LIBRARIES_CACHE_FILE, 'r') as f:
                 cached_libraries = json.load(f)
-            print("Librerías cargadas desde caché.")
+            print("Libraries loaded from cache.")
             return True
         except json.JSONDecodeError:
-            print("Error al decodificar caché de librerías.")
+            print("Error decoding libraries cache.")
             return False
-    print("Archivo de caché de librerías no encontrado.")
+    print("Libraries cache file not found.")
     return False
 
 def save_libraries_cache():
@@ -68,23 +68,23 @@ def save_libraries_cache():
     try:
         with open(LIBRARIES_CACHE_FILE, 'w') as f:
             json.dump(cached_libraries, f, indent=4)
-        print("Caché de librerías guardado.")
+        print("Libraries cache saved.")
     except IOError as e:
-        print(f"Error al guardar caché de librerías: {e}")
+        print(f"Error saving libraries cache: {e}")
 
 def fetch_libraries_from_zotero():
     global cached_libraries
-    print("Recuperando librerías desde la API de Zotero...")
+    print("Fetching libraries from Zotero API...")
     try:
         libs = [{"id": USER_ID, "type": "user", "name": "Mi biblioteca"}]
-        groups = user_zot.groups() # Pyzotero.groups() :contentReference[oaicite:0]{index=0}
+        groups = user_zot.groups()
         for g in groups:
-            libs.append({"id": g["id"], "type": "group", "name": g["data"]["name"]}) # Adjusted to access name correctly
+            libs.append({"id": g["id"], "type": "group", "name": g["data"]["name"]})
         cached_libraries = libs
         save_libraries_cache()
-        print("Librerías recuperadas y cacheadas.")
+        print("Libraries fetched and cached.")
     except Exception as e:
-        print(f"Error al recuperar librerías de Zotero: {e}")
+        print(f"Error fetching libraries from Zotero: {e}")
         # Decide if you want to clear cache or keep old one on error
         # cached_libraries = [] # Option: clear cache on error
 
@@ -102,12 +102,12 @@ def load_items_cache(lib_type: str, lib_id: str, collection_key: str = None):
     if cache_file.exists():
         try:
             with open(cache_file, 'r') as f:
-                print(f"Cargando ítems desde caché: {cache_file}")
+                print(f"Loading items from cache: {cache_file}")
                 return json.load(f)
         except json.JSONDecodeError:
-            print(f"Error al decodificar caché de ítems: {cache_file}")
+            print(f"Error decoding items cache: {cache_file}")
             return None # Indicate cache read failure
-    print(f"Archivo de caché de ítems no encontrado: {cache_file}")
+    print(f"Items cache file not found: {cache_file}")
     return None
 
 def save_items_cache(lib_type: str, lib_id: str, items_data, collection_key: str = None):
@@ -116,9 +116,9 @@ def save_items_cache(lib_type: str, lib_id: str, items_data, collection_key: str
     try:
         with open(cache_file, 'w') as f:
             json.dump(items_data, f, indent=4)
-        print(f"Caché de ítems guardado: {cache_file}")
+        print(f"Items cache saved: {cache_file}")
     except IOError as e:
-        print(f"Error al guardar caché de ítems {cache_file}: {e}")
+        print(f"Error saving items cache {cache_file}: {e}")
 
 def format_item(it, zot):
     """Helper function to format a single Zotero item, ensuring hasAttachment is accurate."""
@@ -162,7 +162,7 @@ def format_item(it, zot):
 def fetch_and_cache_items(lib_type: str, lib_id: str, collection_key: str = None):
     """Fetches items from Zotero, formats them, saves to cache, and returns them."""
     zot = user_zot if lib_type == "user" else group_client(lib_id)
-    print(f"Recuperando ítems desde Zotero para {lib_type}/{lib_id}" + (f"/collection/{collection_key}" if collection_key else ""))
+    print(f"Fetching items from Zotero for {lib_type}/{lib_id}" + (f"/collection/{collection_key}" if collection_key else ""))
     try:
         if collection_key:
             items_data = zot.everything(zot.collection_items(collection_key, itemType="-attachment || annotation"))
@@ -176,8 +176,7 @@ def fetch_and_cache_items(lib_type: str, lib_id: str, collection_key: str = None
         return result
     except Exception as e:
         print(f"Error fetching items for {lib_type}/{lib_id}" + (f"/collection/{collection_key}" if collection_key else "") + f": {e}")
-        # Decide how to handle errors, maybe raise HTTPException?
-        raise HTTPException(status_code=500, detail=f"Error al recuperar ítems: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching items: {e}")
 
 # --- End Cache Functions ---
 
@@ -203,7 +202,7 @@ def startup_event():
     if not load_libraries_cache():
         fetch_libraries_from_zotero()
     # Sincronizar SQLite antes de que el frontend haga peticiones
-    print("Sincronizando base de datos SQLite al iniciar el backend...")
+    print("Synchronizing SQLite database on backend startup...")
     sync_sqlite_from_zotero()
 # --- End Startup Logic ---
 
@@ -277,7 +276,7 @@ def sync_sqlite_from_zotero():
         for g in groups:
             libs.append({"id": g["id"], "type": "group", "name": g["data"]["name"]})
     except Exception as e:
-        print(f"Error obteniendo grupos: {e}")
+        print(f"Error getting groups: {e}")
     for lib in libs:
         lib_type = lib["type"]
         lib_id = lib["id"]
@@ -295,7 +294,7 @@ def sync_sqlite_from_zotero():
                     library_id=lib_id
                 )
         except Exception as e:
-            print(f"Error sincronizando colecciones para {lib_type}/{lib_id}: {e}")
+            print(f"Error synchronizing collections for {lib_type}/{lib_id}: {e}")
         # Ítems principales (sin attachments ni anotaciones)
         try:
             items = zot.everything(zot.top(itemType="-attachment || annotation"))
@@ -317,17 +316,15 @@ def sync_sqlite_from_zotero():
                         library_id=lib_id
                     )
         except Exception as e:
-            print(f"Error sincronizando ítems para {lib_type}/{lib_id}: {e}")
+            print(f"Error synchronizing items for {lib_type}/{lib_id}: {e}")
         # Attachments independientes
         try:
             attachments = zot.everything(zot.items(itemType="attachment"))
-            # Obtener todos los parentItem existentes en la tabla items
             cur.execute('SELECT id FROM items WHERE library_type=? AND library_id=?', (lib_type, lib_id))
             existing_items = set(row[0] for row in cur.fetchall())
             for att in attachments:
                 data = att.get("data", {})
                 parent = data.get("parentItem")
-                # Si no tiene parentItem o el parent no existe en items, es attachment independiente
                 if not parent or parent not in existing_items:
                     insert_item(
                         id=att["key"],
@@ -336,7 +333,6 @@ def sync_sqlite_from_zotero():
                         library_id=lib_id,
                         metadata=json.dumps(data)
                     )
-                    # Asociar a colecciones si corresponde
                     col_keys = data.get("collections", [])
                     for col_id in col_keys:
                         insert_item_collection(
@@ -346,38 +342,37 @@ def sync_sqlite_from_zotero():
                             library_id=lib_id
                         )
         except Exception as e:
-            print(f"Error sincronizando attachments independientes para {lib_type}/{lib_id}: {e}")
+            print(f"Error synchronizing standalone attachments for {lib_type}/{lib_id}: {e}")
     conn.close()
-    print("Sincronización SQLite completada.")
+    print("SQLite synchronization completed.")
 
 @app.post("/api/refresh-libraries") # Using POST for action
 def refresh_libraries():
-    """Fuerza la actualización de la caché de librerías, elimina caché de ítems y sincroniza SQLite."""
+    """Forces library cache update, deletes item caches, and synchronizes SQLite."""
     global cached_libraries
     fetch_libraries_from_zotero() # Fetches and saves library cache
 
     # Clear item caches
-    print("Eliminando caché de ítems...")
+    print("Deleting item caches...")
     deleted_count = 0
     try:
         cache_pattern = str(CACHE_DIR / "items_*.json")
         for f in glob.glob(cache_pattern):
-             # Security check: ensure we only delete files starting with 'items_' inside the cache dir
             if Path(f).name.startswith("items_"):
                 try:
                     os.remove(f)
                     deleted_count += 1
-                    print(f"Eliminado: {f}")
+                    print(f"Deleted: {f}")
                 except OSError as e:
-                    print(f"Error eliminando archivo de caché {f}: {e}")
+                    print(f"Error deleting cache file {f}: {e}")
     except Exception as e:
-        print(f"Error buscando archivos de caché de ítems: {e}")
+        print(f"Error searching for item cache files: {e}")
 
     # Sincronizar SQLite
-    print("Sincronizando base de datos SQLite...")
+    print("Synchronizing SQLite database...")
     sync_sqlite_from_zotero()
 
-    return {"message": f"Caché de librerías actualizada. {deleted_count} cachés de ítems eliminados. SQLite sincronizado."}
+    return {"message": f"Library cache updated. {deleted_count} item caches deleted. SQLite synchronized."}
 
 
 @app.get("/api/libraries/{lib_type}/{lib_id}/items")
@@ -660,10 +655,10 @@ def clear_downloads():
     """Deletes all files in the downloads directory."""
     deleted_count = 0
     errors = []
-    print(f"Intentando borrar archivos en: {DOWNLOADS_DIR}")
+    print(f"Attempting to delete files in: {DOWNLOADS_DIR}")
     if not DOWNLOADS_DIR.exists() or not DOWNLOADS_DIR.is_dir():
-        print("El directorio de descargas no existe.")
-        return {"message": "El directorio de descargas no existe.", "deleted_count": 0}
+        print("Downloads directory does not exist.")
+        return {"message": "Downloads directory does not exist.", "deleted_count": 0}
 
     try:
         for item in DOWNLOADS_DIR.iterdir():
@@ -671,24 +666,24 @@ def clear_downloads():
                 try:
                     item.unlink() # Delete the file
                     deleted_count += 1
-                    print(f"Eliminado: {item.name}")
+                    print(f"Deleted: {item.name}")
                 except OSError as e:
-                    error_msg = f"Error eliminando archivo {item.name}: {e}"
+                    error_msg = f"Error deleting file {item.name}: {e}"
                     print(error_msg)
                     errors.append(error_msg)
     except Exception as e:
-        error_msg = f"Error inesperado al iterar el directorio de descargas: {e}"
+        error_msg = f"Unexpected error while iterating downloads directory: {e}"
         print(error_msg)
         raise HTTPException(status_code=500, detail=error_msg)
 
     if errors:
         return {
-            "message": f"Proceso completado con errores. {deleted_count} archivos eliminados.",
+            "message": f"Process completed with errors. {deleted_count} files deleted.",
             "deleted_count": deleted_count,
             "errors": errors
         }
     else:
-        return {"message": f"Todos los archivos ({deleted_count}) en el directorio de descargas han sido eliminados.", "deleted_count": deleted_count}
+        return {"message": f"All files ({deleted_count}) in the downloads directory have been deleted.", "deleted_count": deleted_count}
 
 # --- End New Endpoint ---
 

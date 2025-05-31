@@ -1,4 +1,3 @@
-
 <!-- Centered logo at the top -->
 <p align="center">
   <img src="frontend/public/logo.png" alt="ZotReader Logo" width="180"/>
@@ -48,6 +47,14 @@ We highly recommend using **free AI APIs** like Gemini and OpenRouter, which off
      ```bash
      cp .env.example .env
      ```
+   - You can open the `.env` file with your favorite editor, for example:
+     ```bash
+     code .env
+     ```
+     Or on macOS you can also use:
+     ```bash
+     open .env
+     ```
    - Open the `.env` file in your favorite editor and fill in the required API keys:
      - `OPENAI_API_KEY` (optional, for OpenAI)
      - `GEMINI_API_KEY` (recommended, for Gemini)
@@ -72,6 +79,8 @@ We highly recommend using **free AI APIs** like Gemini and OpenRouter, which off
 5. **Access the app:**
    - Open your browser and go to [http://localhost:8006](http://localhost:8006)
 
+> **Note:** Although the backend runs internally on port 8000, the application will be available on the port you have configured in the `docker-compose.yml` file (by default, in this project it is **8006**). Make sure to access the correct URL, for example: http://localhost:8006
+
 ## Option 2: Manual Setup (Python Backend + Frontend)
 
 ### 1. Backend (Python)
@@ -85,6 +94,14 @@ We highly recommend using **free AI APIs** like Gemini and OpenRouter, which off
   - Copy `.env.example` to `.env`:
     ```bash
     cp .env.example .env
+    ```
+  - You can open the `.env` file with your favorite editor, for example:
+    ```bash
+    code .env
+    ```
+    Or on macOS you can also use:
+    ```bash
+    open .env
     ```
   - Open the `.env` file in your favorite editor and fill in the required API keys:
     - `OPENAI_API_KEY` (optional, for OpenAI)
