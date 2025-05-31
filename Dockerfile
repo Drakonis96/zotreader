@@ -10,6 +10,7 @@ RUN npm run build
 FROM python:3.11-slim
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
 # Copy only requirements first to leverage Docker cache
 COPY backend/requirements.txt .
