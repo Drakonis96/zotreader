@@ -22,7 +22,7 @@ from pydantic import BaseModel # Added for response model
 from backend.apis.google_api import router as google_router
 from backend.apis.openai_api import router as openai_router
 from backend.apis.openrouter_api import router as openrouter_router
-from backend.annotations.handlers import router as annotations_router  # Añadir el router de anotaciones
+from annotations.handlers import router as annotations_router  # Fix import for Docker context
 from backend.apis.markdown_api import router as markdown_router, generate_md_for_pdf
 from backend.settings import DOWNLOADS_DIR
 from backend.db import get_collections, get_subcollections, get_items, search_items, get_connection
